@@ -1,0 +1,2428 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ياسر عمار | مطور ومصمم مواقع محترف</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap');
+        
+        :root {
+            --primary-color: #2196F3;
+            --primary-dark: #1976D2;
+            --primary-light: #BBDEFB;
+            --accent-color: #FF5722;
+            --accent-dark: #E64A19;
+            --text-light: #FFFFFF;
+            --text-dark: #212121;
+            --text-medium: #757575;
+            --background-dark: #0a0a0a;
+            --background-medium: #121212;
+            --surface-color: rgba(255, 255, 255, 0.05);
+            --surface-color-hover: rgba(255, 255, 255, 0.1);
+            --success-color: #4CAF50;
+            --error-color: #F44336;
+            --warning-color: #FFC107;
+            --info-color: #2196F3;
+            --gradient-primary: linear-gradient(135deg, #2196F3, #21CBF3);
+            --gradient-accent: linear-gradient(135deg, #FF5722, #FF9800);
+            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.2);
+            --transition-fast: 0.3s ease;
+            --transition-normal: 0.5s ease;
+            --transition-slow: 0.8s ease;
+            --border-radius-sm: 4px;
+            --border-radius-md: 8px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 24px;
+            --border-radius-full: 9999px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            color: var(--text-light);
+            background-color: var(--background-dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(to bottom, #000000, #050a18);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            position: relative;
+        }
+        
+        header {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all var(--transition-normal);
+            padding: 20px 0;
+        }
+        
+        header.scrolled {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-light);
+            text-decoration: none;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo::before {
+            content: "";
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.3;
+            transform: scale(1.5);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1.5);
+                opacity: 0.3;
+            }
+            50% {
+                transform: scale(2);
+                opacity: 0.2;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0.3;
+            }
+        }
+        
+        .logo span {
+            color: var(--primary-color);
+            margin-right: 5px;
+            position: relative;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 35px;
+        }
+        
+        nav ul li a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            position: relative;
+            padding: 8px 0;
+            transition: color var(--transition-fast);
+        }
+        
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            right: 0;
+            background-color: var(--primary-color);
+            transition: width var(--transition-fast);
+        }
+        
+        nav ul li a:hover {
+            color: var(--primary-color);
+        }
+        
+        nav ul li a:hover::after,
+        nav ul li a.active::after {
+            width: 100%;
+        }
+        
+        nav ul li a.active {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .theme-toggle {
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: var(--border-radius-full);
+            transition: var(--transition-fast);
+        }
+        
+        .theme-toggle:hover {
+            color: var(--primary-color);
+        }
+        
+        .contact-btn {
+            background: var(--gradient-primary);
+            color: var(--text-light);
+            border: none;
+            padding: 10px 25px;
+            border-radius: var(--border-radius-full);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .contact-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            z-index: 1000;
+        }
+        
+        section {
+            padding: 120px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 100px;
+            position: relative;
+        }
+        
+        .hero-content {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-text {
+            width: 50%;
+            position: relative;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            font-weight: 500;
+            margin-bottom: 20px;
+            display: block;
+            position: relative;
+        }
+        
+        .hero-subtitle::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: -60px;
+            width: 40px;
+            height: 2px;
+            background-color: var(--primary-color);
+            transform: translateY(-50%);
+        }
+        
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .hero-title .highlight {
+            color: var(--primary-color);
+            position: relative;
+            white-space: nowrap;
+        }
+        
+        .hero-title .highlight::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 10px;
+            bottom: 5px;
+            right: 0;
+            background-color: var(--primary-color);
+            opacity: 0.2;
+            border-radius: 5px;
+            z-index: -1;
+        }
+        
+        .hero-description {
+            font-size: 1.1rem;
+            color: var(--text-medium);
+            margin-bottom: 40px;
+            max-width: 500px;
+        }
+        
+        .hero-3d-container {
+            width: 40%;
+            position: relative;
+            height: 500px;
+        }
+        
+        .hero-btns {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .btn {
+            padding: 14px 32px;
+            border-radius: var(--border-radius-full);
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: var(--text-light);
+            border: none;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-light);
+            border: 2px solid var(--primary-color);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(33, 150, 243, 0.1);
+        }
+        
+        .btn i {
+            font-size: 1.1rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--border-radius-full);
+            color: var(--text-light);
+            font-size: 1.2rem;
+            transition: all var(--transition-fast);
+            background: var(--surface-color);
+        }
+        
+        .social-link:hover {
+            background: var(--surface-color-hover);
+            color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        
+        .section-subtitle {
+            font-size: 1rem;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-light);
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            background: var(--gradient-primary);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: var(--border-radius-full);
+        }
+        
+        .section-description {
+            max-width: 700px;
+            margin: 0 auto;
+            color: var(--text-medium);
+            font-size: 1.1rem;
+        }
+        
+        #about {
+            background-color: var(--background-medium);
+            position: relative;
+        }
+        
+        .about-container {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .about-image-container {
+            grid-column: span 5;
+            position: relative;
+        }
+        
+        .about-image {
+            width: 100%;
+            height: auto;
+            border-radius: var(--border-radius-lg);
+            position: relative;
+            z-index: 1;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+        
+        .about-image img {
+            width: 100%;
+            height: auto;
+            transition: transform var(--transition-normal);
+        }
+        
+        .about-image:hover img {
+            transform: scale(1.05);
+        }
+        
+        .about-shape {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid var(--primary-color);
+            border-radius: var(--border-radius-lg);
+            top: 20px;
+            right: -20px;
+            z-index: 0;
+        }
+        
+        .about-image-caption {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: var(--border-radius-md);
+            z-index: 2;
+        }
+        
+        .about-image-caption h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .about-image-caption p {
+            font-size: 0.9rem;
+            color: var(--text-medium);
+        }
+        
+        .about-content {
+            grid-column: span 7;
+        }
+        
+        .about-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .about-title::after {
+            content: "";
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background: var(--primary-color);
+            bottom: 0;
+            right: 0;
+            border-radius: var(--border-radius-full);
+        }
+        
+        .about-text {
+            margin-bottom: 30px;
+            color: var(--text-medium);
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+        
+        .info-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-item i {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-left: 15px;
+            min-width: 20px;
+        }
+        
+        .info-item-content {
+            flex: 1;
+        }
+        
+        .info-item-label {
+            font-size: 0.9rem;
+            color: var(--text-medium);
+            margin-bottom: 5px;
+        }
+        
+        .info-item-value {
+            font-size: 1rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+        
+        .skills-container {
+            margin-top: 40px;
+        }
+        
+        .skills-heading {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .skills-heading i {
+            color: var(--primary-color);
+        }
+        
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .skill-item {
+            background: var(--surface-color);
+            border-radius: var(--border-radius-md);
+            padding: 15px;
+            text-align: center;
+            transition: all var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .skill-item::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--primary-color);
+            border-radius: var(--border-radius-md) 0 0 var(--border-radius-md);
+            transition: all var(--transition-fast);
+        }
+        
+        .skill-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            background: var(--surface-color-hover);
+        }
+        
+        .skill-item:hover::before {
+            width: 100%;
+            opacity: 0.1;
+        }
+        
+        .skill-icon {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .skill-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        #services {
+            position: relative;
+        }
+        
+        .services-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .service-card {
+            background: var(--surface-color);
+            border-radius: var(--border-radius-lg);
+            padding: 40px 30px;
+            transition: all var(--transition-normal);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .service-card::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: var(--gradient-primary);
+            z-index: -1;
+            transition: all var(--transition-normal);
+            opacity: 0;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .service-card:hover::before {
+            opacity: 0.08;
+        }
+        
+        .service-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            transition: all var(--transition-normal);
+        }
+        
+        .service-card:hover .service-icon {
+            color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+        
+        .service-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-light);
+            transition: all var(--transition-normal);
+        }
+        
+        .service-description {
+            color: var(--text-medium);
+            margin-bottom: 20px;
+            line-height: 1.7;
+            transition: all var(--transition-normal);
+        }
+        
+        .service-link {
+            color: var(--primary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all var(--transition-fast);
+        }
+        
+        .service-link:hover {
+            gap: 10px;
+        }
+        
+        .service-link i {
+            transition: all var(--transition-fast);
+        }
+        
+        .service-card:hover .service-link i {
+            transform: translateX(-5px);
+        }
+        
+        #portfolio {
+            background-color: var(--background-medium);
+        }
+        
+        .portfolio-filter {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+        
+        .filter-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-medium);
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 8px 20px;
+            border-radius: var(--border-radius-full);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .filter-btn.active {
+            background: var(--primary-color);
+            color: var(--text-light);
+        }
+        
+        .filter-btn:hover:not(.active) {
+            color: var(--text-light);
+            background: var(--surface-color-hover);
+        }
+        
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .portfolio-item {
+            position: relative;
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-normal);
+            height: 280px;
+        }
+        
+        .portfolio-item:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .portfolio-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all var(--transition-normal);
+        }
+        
+        .portfolio-item:hover .portfolio-image {
+            transform: scale(1.1);
+        }
+        
+        .portfolio-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            transition: all var(--transition-normal);
+        }
+        
+        .portfolio-item:hover .portfolio-overlay {
+            opacity: 1;
+        }
+        
+        .portfolio-category {
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 10px;
+            transform: translateY(-20px);
+            transition: all var(--transition-normal);
+            opacity: 0;
+        }
+        
+        .portfolio-item:hover .portfolio-category {
+            transform: translateY(0);
+            opacity: 1;
+            transition-delay: 0.1s;
+        }
+        
+        .portfolio-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            text-align: center;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+            opacity: 0;
+        }
+        
+        .portfolio-item:hover .portfolio-title {
+            transform: translateY(0);
+            opacity: 1;
+            transition-delay: 0.2s;
+        }
+        
+        .portfolio-links {
+            display: flex;
+            gap: 15px;
+            transform: scale(0);
+            transition: all var(--transition-normal);
+        }
+        
+        .portfolio-item:hover .portfolio-links {
+            transform: scale(1);
+            transition-delay: 0.3s;
+        }
+        
+        .portfolio-link {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--border-radius-full);
+            background: var(--text-light);
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+        
+        .portfolio-link:hover {
+            background: var(--primary-color);
+            color: var(--text-light);
+            transform: translateY(-3px);
+        }
+        
+        #contact {
+            position: relative;
+        }
+        
+        .contact-container {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 50px;
+        }
+        
+        .contact-info {
+            grid-column: span 5;
+        }
+        
+        .contact-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-light);
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .contact-title::after {
+            content: "";
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background: var(--primary-color);
+            bottom: 0;
+            right: 0;
+            border-radius: var(--border-radius-full);
+        }
+        
+        .contact-description {
+            color: var(--text-medium);
+            margin-bottom: 30px;
+            line-height: 1.7;
+        }
+        
+        .contact-detail {
+            display: flex;
+            margin-bottom: 25px;
+        }
+        
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--border-radius-full);
+            background: var(--surface-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-left: 20px;
+            transition: all var(--transition-fast);
+        }
+        
+        .contact-detail:hover .contact-icon {
+            background: var(--primary-color);
+            color: var(--text-light);
+            transform: scale(1.1);
+        }
+        
+        .contact-detail-content {
+            flex: 1;
+        }
+        
+        .contact-detail-label {
+            font-size: 0.9rem;
+            color: var(--text-medium);
+            margin-bottom: 5px;
+        }
+        
+        .contact-detail-value {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+        
+        .contact-social {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+        }
+        
+        .contact-social-link {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--border-radius-full);
+            background: var(--surface-color);
+            color: var(--text-light);
+            font-size: 1.2rem;
+            transition: all var(--transition-fast);
+        }
+        
+        .contact-social-link:hover {
+            background: var(--primary-color);
+            color: var(--text-light);
+            transform: translateY(-5px);
+        }
+        
+        .contact-form {
+            grid-column: span 7;
+            background: var(--surface-color);
+            border-radius: var(--border-radius-lg);
+            padding: 40px;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .contact-form::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            z-index: -1;
+            opacity: 0.05;
+        }
+        
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--text-light);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.95rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            background: var(--background-dark);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-md);
+            padding: 14px 18px;
+            font-size: 1rem;
+            color: var(--text-light);
+            transition: all var(--transition-fast);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(33, 150, 243, 0.05);
+        }
+        
+        .form-control::placeholder {
+            color: var(--text-medium);
+        }
+        
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            background: var(--gradient-primary);
+            color: var(--text-light);
+            border: none;
+            padding: 15px;
+            border-radius: var(--border-radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        footer {
+            background-color: var(--background-medium);
+            padding: 80px 0 30px;
+            position: relative;
+        }
+        
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .footer-widget {
+            grid-column: span 3;
+        }
+        
+        .footer-widget-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .footer-widget-title::after {
+            content: "";
+            position: absolute;
+            width: 40px;
+            height: 2px;
+            background: var(--primary-color);
+            bottom: 0;
+            right: 0;
+            border-radius: var(--border-radius-full);
+        }
+        
+        .footer-about-text {
+            color: var(--text-medium);
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+        
+        .footer-social {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .footer-social-link {
+            width: 35px;
+            height: 35px;
+            border-radius: var(--border-radius-full);
+            background: var(--surface-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: all var(--transition-fast);
+        }
+        
+        .footer-social-link:hover {
+            background: var(--primary-color);
+            color: var(--text-light);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-link-item {
+            margin-bottom: 12px;
+        }
+        
+        .footer-link {
+            color: var(--text-medium);
+            text-decoration: none;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .footer-link:hover {
+            color: var(--primary-color);
+            transform: translateX(-8px);
+        }
+        
+        .footer-link i {
+            font-size: 0.7rem;
+        }
+        
+        .footer-contact-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .footer-contact-icon {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            margin-left: 15px;
+            margin-top: 5px;
+        }
+        
+        .footer-contact-text {
+            color: var(--text-medium);
+            line-height: 1.7;
+        }
+        
+        .footer-newsletter-text {
+            color: var(--text-medium);
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+        
+        .footer-newsletter-form {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .footer-newsletter-input {
+            flex: 1;
+            background: var(--background-dark);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-md);
+            padding: 12px 15px;
+            color: var(--text-light);
+        }
+        
+        .footer-newsletter-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .footer-newsletter-btn {
+            background: var(--primary-color);
+            color: var(--text-light);
+            border: none;
+            padding: 12px 15px;
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .footer-newsletter-btn:hover {
+            background: var(--primary-dark);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 30px;
+            text-align: center;
+        }
+        
+        .footer-copyright {
+            color: var(--text-medium);
+            font-size: 0.9rem;
+        }
+        
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: var(--border-radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 99;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .scroll-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .scroll-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .section-divider {
+            width: 100%;
+            height: 100px;
+            position: absolute;
+            top: -50px;
+            left: 0;
+            overflow: hidden;
+            line-height: 0;
+            z-index: 1;
+        }
+        
+        .section-divider svg {
+            position: relative;
+            display: block;
+            width: calc(140% + 1.3px);
+            height: 100px;
+            transform: rotateY(180deg);
+        }
+        
+        .section-divider .shape-fill {
+            fill: var(--background-dark);
+        }
+        
+        /* Animation Classes */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s;
+        }
+        
+        .fade-up.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .fade-right {
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: all 1s;
+        }
+        
+        .fade-right.animate {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .fade-left {
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 1s;
+        }
+        
+        .fade-left.animate {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        /* Responsive Styles */
+        @media screen and (max-width: 1200px) {
+            .hero-title {
+                font-size: 3.5rem;
+            }
+            
+            .container {
+                max-width: 100%;
+                padding: 0 50px;
+            }
+            
+            .hero-3d-container {
+                height: 400px;
+            }
+            
+            .about-image-container {
+                grid-column: span 6;
+            }
+            
+            .about-content {
+                grid-column: span 6;
+            }
+            
+            .footer-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .footer-widget {
+                grid-column: span 1;
+            }
+        }
+        
+        @media screen and (max-width: 992px) {
+            .hero-content {
+                flex-direction: column-reverse;
+                gap: 50px;
+            }
+            
+            .hero-text, .hero-3d-container {
+                width: 100%;
+            }
+            
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .about-image-container {
+                grid-column: span 12;
+            }
+            
+            .about-content {
+                grid-column: span 12;
+            }
+            
+            .contact-info {
+                grid-column: span 12;
+                margin-bottom: 30px;
+            }
+            
+            .contact-form {
+                grid-column: span 12;
+            }
+            
+            .skills-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            section {
+                padding: 80px 0;
+            }
+        }
+        
+        @media screen and (max-width: 768px) {
+            .container {
+                padding: 0 30px;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            nav ul {
+                position: fixed;
+                top: 80px;
+                right: -100%;
+                width: 250px;
+                height: calc(100vh - 80px);
+                background: rgba(10, 10, 10, 0.95);
+                backdrop-filter: blur(10px);
+                flex-direction: column;
+                padding: 40px 30px;
+                gap: 20px;
+                z-index: 1000;
+                transition: right var(--transition-normal);
+                box-shadow: var(--shadow-lg);
+            }
+            
+            nav ul.show {
+                right: 0;
+            }
+            
+            nav ul li a {
+                display: block;
+                font-size: 1.1rem;
+            }
+            
+            .hero-btns {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .services-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-3d-container {
+                height: 350px;
+            }
+            
+            .portfolio-filter {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding-bottom: 15px;
+                justify-content: flex-start;
+                gap: 5px;
+            }
+            
+            .filter-btn {
+                white-space: nowrap;
+                font-size: 0.9rem;
+                padding: 8px 15px;
+            }
+        }
+        
+        @media screen and (max-width: 576px) {
+            .container {
+                padding: 0 20px;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
+            .about-title {
+                font-size: 1.5rem;
+            }
+            
+            .hero-subtitle::before {
+                display: none;
+            }
+            
+            .info-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-3d-container {
+                height: 300px;
+            }
+            
+            .contact-form {
+                padding: 25px;
+            }
+            
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-widget {
+                margin-bottom: 20px;
+            }
+            
+            .footer-newsletter-form {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <header>
+        <div class="container nav-container">
+            <a href="#" class="logo"><span>ي</span>اسر عمار</a>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav>
+                <ul>
+                    <li><a href="#hero" class="active">الرئيسية</a></li>
+                    <li><a href="#about">من أنا</a></li>
+                    <li><a href="#services">خدماتي</a></li>
+                    <li><a href="#portfolio">أعمالي</a></li>
+                    <li><a href="#contact">اتصل بي</a></li>
+                </ul>
+            </nav>
+            <div class="nav-buttons">
+                <button class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <a href="#contact" class="contact-btn">تواصل معي</a>
+            </div>
+        </div>
+    </header>
+    
+    <section id="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text fade-right">
+                    <span class="hero-subtitle">مطور ومصمم مواقع</span>
+                    <h1 class="hero-title">مرحبا، أنا <span class="highlight typing-effect">ياسر عمار</span></h1>
+                    <p class="hero-description">مطور ويب محترف متخصص في تطوير تجارب ويب فريدة وتفاعلية باستخدام Three.js و React وأحدث تقنيات الويب.</p>
+                    <div class="hero-btns">
+                        <a href="#portfolio" class="btn btn-primary">
+                            <i class="fas fa-laptop-code"></i>
+                            مشاهدة أعمالي
+                        </a>
+                        <a href="#contact" class="btn btn-secondary">
+                            <i class="fas fa-paper-plane"></i>
+                            تواصل معي
+                        </a>
+                    </div>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-behance"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-dribbble"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                <div class="hero-3d-container fade-left" id="hero-3d"></div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="about">
+        <div class="container">
+            <div class="about-container">
+                <div class="about-image-container fade-right">
+                    <div class="about-image">
+                        <img src="/api/placeholder/600/700" alt="ياسر عمار - مطور ويب">
+                        <div class="about-image-caption">
+                            <h4>٥+ سنوات خبرة</h4>
+                            <p>في تطوير وتصميم المواقع</p>
+                        </div>
+                    </div>
+                    <div class="about-shape"></div>
+                </div>
+                
+                <div class="about-content fade-left">
+                    <h2 class="about-title">من أنا وماذا أفعل</h2>
+                    <p class="about-text">أنا ياسر عمار، مطور ومصمم مواقع ويب محترف مع شغف خاص بتطوير تجارب ويب مميزة وتفاعلية. أعمل على تحويل الأفكار الإبداعية إلى حلول رقمية متكاملة تجمع بين الجمال والوظائف العملية.</p>
+                    <p class="about-text">أتمتع بخبرة واسعة في مجموعة متنوعة من تقنيات الويب الحديثة، مع تركيز خاص على Three.js لتطوير تجارب 3D مذهلة، وأؤمن بأن التصميم الجيد يبدأ بفهم احتياجات المستخدم وينتهي بتنفيذ دقيق يحقق الأهداف المرجوة.</p>
+                    
+                    <div class="info-list">
+                        <div class="info-item">
+                            <i class="fas fa-user"></i>
+                            <div class="info-item-content">
+                                <span class="info-item-label">الاسم</span>
+                                <span class="info-item-value">ياسر عمار</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <div class="info-item-content">
+                                <span class="info-item-label">البريد الإلكتروني</span>
+                                <span class="info-item-value">contact@yasserammar.com</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-phone"></i>
+                            <div class="info-item-content">
+                                <span class="info-item-label">الهاتف</span>
+                                <span class="info-item-value">+123 456 7890</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div class="info-item-content">
+                                <span class="info-item-label">الموقع</span>
+                                <span class="info-item-value">القاهرة، مصر</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <div class="info-item-content">
+                                <span class="info-item-label">تاريخ الميلاد</span>
+                                <span class="info-item-value">1 يناير 1990</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-briefcase"></i>
+                            <div class="info-item-content">
+                                <span class="info-item-label">المهنة</span>
+                                <span class="info-item-value">مطور ومصمم مواقع</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="#" class="btn btn-primary"><i class="fas fa-download"></i> تحميل السيرة الذاتية</a>
+                    
+                    <div class="skills-container">
+                        <h3 class="skills-heading"><i class="fas fa-code"></i> مهاراتي التقنية</h3>
+                        <div class="skills-grid">
+                            <div class="skill-item">
+                                <div class="skill-icon"><i class="fab fa-html5"></i></div>
+                                <div class="skill-name">HTML5 / CSS3</div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="skill-icon"><i class="fab fa-js"></i></div>
+                                <div class="skill-name">JavaScript</div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="skill-icon"><i class="fab fa-react"></i></div>
+                                <div class="skill-name">React.js</div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="skill-icon"><i class="fas fa-cube"></i></div>
+                                <div class="skill-name">Three.js</div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="skill-icon"><i class="fab fa-node-js"></i></div>
+                                <div class="skill-name">Node.js</div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="skill-icon"><i class="fas fa-paint-brush"></i></div>
+                                <div class="skill-name">UI/UX Design</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="services">
+        <div class="container">
+            <div class="section-header fade-up">
+                <span class="section-subtitle">ماذا أقدم</span>
+                <h2 class="section-title">خدماتي الاحترافية</h2>
+                <p class="section-description">أقدم مجموعة متنوعة من خدمات تطوير الويب والتصميم، مع التركيز على إنشاء تجارب تفاعلية استثنائية.</p>
+            </div>
+            
+            <div class="services-container">
+                <div class="service-card fade-up">
+                    <div class="service-icon"><i class="fas fa-code"></i></div>
+                    <h3 class="service-title">تطوير الواجهة الأمامية</h3>
+                    <p class="service-description">تطوير واجهات ويب سريعة وتفاعلية باستخدام أحدث التقنيات مثل HTML5 و CSS3 و JavaScript و React.js.</p>
+                    <a href="#" class="service-link">اقرأ المزيد <i class="fas fa-arrow-left"></i></a>
+                </div>
+                
+                <div class="service-card fade-up">
+                    <div class="service-icon"><i class="fas fa-cubes"></i></div>
+                    <h3 class="service-title">تطوير Three.js</h3>
+                    <p class="service-description">إنشاء تجارب ويب 3D مذهلة وتفاعلية باستخدام Three.js لمواقع ويب فريدة من نوعها تميزك عن المنافسين.</p>
+                    <a href="#" class="service-link">اقرأ المزيد <i class="fas fa-arrow-left"></i></a>
+                </div>
+                
+                <div class="service-card fade-up">
+                    <div class="service-icon"><i class="fas fa-paint-brush"></i></div>
+                    <h3 class="service-title">تصميم UI/UX</h3>
+                    <p class="service-description">تصميم واجهات مستخدم جذابة وسهلة الاستخدام تعزز تجربة المستخدم وتحقق أهداف العمل بكفاءة عالية.</p>
+                    <a href="#" class="service-link">اقرأ المزيد <i class="fas fa-arrow-left"></i></a>
+                </div>
+                
+                <div class="service-card fade-up">
+                    <div class="service-icon"><i class="fas fa-server"></i></div>
+                    <h3 class="service-title">تطوير الواجهة الخلفية</h3>
+                    <p class="service-description">بناء خدمات الويب وواجهات برمجة التطبيقات وقواعد البيانات لدعم تطبيقات الويب المتكاملة والقوية.</p>
+                    <a href="#" class="service-link">اقرأ المزيد <i class="fas fa-arrow-left"></i></a>
+                </div>
+                
+                <div class="service-card fade-up">
+                    <div class="service-icon"><i class="fas fa-mobile-alt"></i></div>
+                    <h3 class="service-title">تصميم متجاوب</h3>
+                    <p class="service-description">إنشاء مواقع ويب تعمل بسلاسة على جميع الأجهزة من أجهزة الكمبيوتر المكتبية إلى الأجهزة المحمولة.</p>
+                    <a href="#" class="service-link">اقرأ المزيد <i class="fas fa-arrow-left"></i></a>
+                </div>
+                
+                <div class="service-card fade-up">
+                    <div class="service-icon"><i class="fas fa-search"></i></div>
+                    <h3 class="service-title">تحسين محركات البحث</h3>
+                    <p class="service-description">تحسين مواقع الويب لمحركات البحث لزيادة الظهور وجذب المزيد من الزوار المستهدفين لموقعك.</p>
+                    <a href="#" class="service-link">اقرأ المزيد <i class="fas fa-arrow-left"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="portfolio">
+        <div class="container">
+            <div class="section-header fade-up">
+                <span class="section-subtitle">أعمالي</span>
+                <h2 class="section-title">مشاريع مميزة</h2>
+                <p class="section-description">نماذج مختارة من أحدث وأفضل المشاريع التي قمت بتطويرها للعملاء في مختلف المجالات.</p>
+            </div>
+            
+            <div class="portfolio-filter fade-up">
+                <button class="filter-btn active" data-filter="all">جميع المشاريع</button>
+                <button class="filter-btn" data-filter="web">تطوير الويب</button>
+                <button class="filter-btn" data-filter="threejs">Three.js</button>
+                <button class="filter-btn" data-filter="design">تصميم UI/UX</button>
+                <button class="filter-btn" data-filter="mobile">تطبيقات موبايل</button>
+            </div>
+            
+            <div class="portfolio-grid">
+                <div class="portfolio-item fade-up" data-category="web">
+                    <img src="/api/placeholder/600/500" alt="تطوير موقع شركة تقنية" class="portfolio-image">
+                    <div class="portfolio-overlay">
+                        <span class="portfolio-category">تطوير الويب</span>
+                        <h3 class="portfolio-title">موقع شركة تقنية</h3>
+                        <div class="portfolio-links">
+                            <a href="#" class="portfolio-link"><i class="fas fa-link"></i></a>
+                            <a href="#" class="portfolio-link"><i class="fas fa-search"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="portfolio-item fade-up" data-category="threejs">
+                    <img src="/api/placeholder/600/500" alt="تجربة 3D تفاعلية" class="portfolio-image">
+                    <div class="portfolio-overlay">
+                        <span class="portfolio-category">Three.js</span>
+                        <h3 class="portfolio-title">تجربة 3D تفاعلية</h3>
+                        <div class="portfolio-links">
+                            <a href="#" class="portfolio-link"><i class="fas fa-link"></i></a>
+                            <a href="#" class="portfolio-link"><i class="fas fa-search"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="portfolio-item fade-up" data-category="design">
+                    <img src="/api/placeholder/600/500" alt="تصميم واجهة مستخدم لتطبيق صحة" class="portfolio-image">
+                    <div class="portfolio-overlay">
+                        <span class="portfolio-category">تصميم UI/UX</span>
+                        <h3 class="portfolio-title">تطبيق صحة ولياقة</h3>
+                        <div class="portfolio-links">
+                            <a href="#" class="portfolio-link"><i class="fas fa-link"></i></a>
+                            <a href="#" class="portfolio-link"><i class="fas fa-search"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="portfolio-item fade-up" data-category="web">
+                    <img src="/api/placeholder/600/500" alt="منصة تعليمية متكاملة" class="portfolio-image">
+                    <div class="portfolio-overlay">
+                        <span class="portfolio-category">تطوير الويب</span>
+                        <h3 class="portfolio-title">منصة تعليمية متكاملة</h3>
+                        <div class="portfolio-links">
+                            <a href="#" class="portfolio-link"><i class="fas fa-link"></i></a>
+                            <a href="#" class="portfolio-link"><i class="fas fa-search"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="portfolio-item fade-up" data-category="mobile">
+                    <img src="/api/placeholder/600/500" alt="تطبيق للهواتف الذكية" class="portfolio-image">
+                    <div class="portfolio-overlay">
+                        <span class="portfolio-category">تطبيقات موبايل</span>
+                        <h3 class="portfolio-title">تطبيق التسوق الذكي</h3>
+                        <div class="portfolio-links">
+                            <a href="#" class="portfolio-link"><i class="fas fa-link"></i></a>
+                            <a href="#" class="portfolio-link"><i class="fas fa-search"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="portfolio-item fade-up" data-category="threejs">
+                    <img src="/api/placeholder/600/500" alt="معرض منتجات 3D" class="portfolio-image">
+                    <div class="portfolio-overlay">
+                        <span class="portfolio-category">Three.js</span>
+                        <h3 class="portfolio-title">معرض منتجات 3D</h3>
+                        <div class="portfolio-links">
+                            <a href="#" class="portfolio-link"><i class="fas fa-link"></i></a>
+                            <a href="#" class="portfolio-link"><i class="fas fa-search"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="contact">
+        <div class="container">
+            <div class="section-header fade-up">
+                <span class="section-subtitle">تواصل معي</span>
+                <h2 class="section-title">دعنا نعمل معاً</h2>
+                <p class="section-description">هل لديك مشروع في ذهنك؟ أنا هنا لمساعدتك في تحويل أفكارك إلى واقع رقمي مميز.</p>
+            </div>
+            
+            <div class="contact-container">
+                <div class="contact-info fade-right">
+                    <h3 class="contact-title">معلومات التواصل</h3>
+                    <p class="contact-description">يمكنك التواصل معي مباشرة عبر وسائل الاتصال المختلفة أو إرسال رسالة من خلال النموذج المرفق، وسأكون سعيداً بالرد عليك في أقرب وقت ممكن.</p>
+                    
+                    <div class="contact-detail">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-detail-content">
+                            <span class="contact-detail-label">الموقع</span>
+                            <span class="contact-detail-value">القاهرة، مصر</span>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-detail">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-detail-content">
+                            <span class="contact-detail-label">البريد الإلكتروني</span>
+                            <span class="contact-detail-value">contact@yasserammar.com</span>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-detail">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-detail-content">
+                            <span class="contact-detail-label">الهاتف</span>
+                            <span class="contact-detail-value">+123 456 7890</span>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-detail">
+                        <div class="contact-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="contact-detail-content">
+                            <span class="contact-detail-label">ساعات العمل</span>
+                            <span class="contact-detail-value">من الأحد للخميس: 9 صباحاً - 6 مساءً</span>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-social">
+                        <a href="#" class="contact-social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="contact-social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="contact-social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="contact-social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="contact-social-link"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                
+                <div class="contact-form fade-left">
+                    <h3 class="form-title">أرسل رسالة</h3>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name" class="form-label">الاسم</label>
+                            <input type="text" id="name" class="form-control" placeholder="أدخل اسمك" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email" class="form-label">البريد الإلكتروني</label>
+                            <input type="email" id="email" class="form-control" placeholder="أدخل بريدك الإلكتروني" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject" class="form-label">الموضوع</label>
+                            <input type="text" id="subject" class="form-control" placeholder="أدخل موضوع الرسالة" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message" class="form-label">الرسالة</label>
+                            <textarea id="message" class="form-control" placeholder="اكتب رسالتك هنا..." required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane"></i> إرسال الرسالة
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-widget">
+                    <h3 class="footer-widget-title">حول</h3>
+                    <p class="footer-about-text">ياسر عمار، مطور ومصمم مواقع محترف مع خبرة واسعة في إنشاء تجارب ويب مميزة باستخدام أحدث التقنيات مثل Three.js و React.</p>
+                    <div class="footer-social">
+                        <a href="#" class="footer-social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="footer-social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="footer-social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="footer-social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-widget">
+                    <h3 class="footer-widget-title">روابط سريعة</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link-item">
+                            <a href="#hero" class="footer-link">
+                                <i class="fas fa-chevron-left"></i> الرئيسية
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="#about" class="footer-link">
+                                <i class="fas fa-chevron-left"></i> من أنا
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="#services" class="footer-link">
+                                <i class="fas fa-chevron-left"></i> خدماتي
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="#portfolio" class="footer-link">
+                                <i class="fas fa-chevron-left"></i> أعمالي
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="#contact" class="footer-link">
+                                <i class="fas fa-chevron-left"></i> اتصل بي
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="footer-widget">
+                    <h3 class="footer-widget-title">اتصل بي</h3>
+                    <div class="footer-contact-item">
+                        <div class="footer-contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="footer-contact-text">
+                            القاهرة، مصر
+                        </div>
+                    </div>
+                    <div class="footer-contact-item">
+                        <div class="footer-contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="footer-contact-text">
+                            contact@yasserammar.com
+                        </div>
+                    </div>
+                    <div class="footer-contact-item">
+                        <div class="footer-contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="footer-contact-text">
+                            +123 456 7890
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer-widget">
+                    <h3 class="footer-widget-title">النشرة الإخبارية</h3>
+                    <p class="footer-newsletter-text">اشترك في النشرة الإخبارية للحصول على آخر الأخبار والعروض الخاصة.</p>
+                    <form class="footer-newsletter-form">
+                        <input type="email" class="footer-newsletter-input" placeholder="البريد الإلكتروني" required>
+                        <button type="submit" class="footer-newsletter-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="footer-copyright">© 2025 جميع الحقوق محفوظة | ياسر عمار | مطور ومصمم مواقع.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <a href="#" class="scroll-to-top" id="scrollTop">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+    
+    <script>
+        // Three.js Scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+        
+        // Create interactive background
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 4000;
+        
+        const posArray = new Float32Array(particlesCount * 3);
+        const colorsArray = new Float32Array(particlesCount * 3);
+        
+        for(let i = 0; i < particlesCount * 3; i += 3) {
+            // Position
+            posArray[i] = (Math.random() - 0.5) * 15;
+            posArray[i + 1] = (Math.random() - 0.5) * 15;
+            posArray[i + 2] = (Math.random() - 0.5) * 15;
+            
+            // Color - using primary color variations
+            colorsArray[i] = 0.13 + Math.random() * 0.1;      // R - blue range
+            colorsArray[i + 1] = 0.58 + Math.random() * 0.1;  // G - blue range
+            colorsArray[i + 2] = 0.95 + Math.random() * 0.05; // B - blue range
+        }
+        
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
+        
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.01,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.8,
+            sizeAttenuation: true
+        });
+        
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+        
+        // Create an animated shape for the hero section
+        const heroElement = document.getElementById('hero-3d');
+        const hero3DRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        hero3DRenderer.setSize(heroElement.clientWidth, heroElement.clientHeight);
+        hero3DRenderer.setPixelRatio(window.devicePixelRatio);
+        heroElement.appendChild(hero3DRenderer.domElement);
+        
+        const heroScene = new THREE.Scene();
+        const heroCamera = new THREE.PerspectiveCamera(75, heroElement.clientWidth / heroElement.clientHeight, 0.1, 1000);
+        
+        // Create a torus knot
+        const geometry = new THREE.TorusKnotGeometry(3, 0.8, 100, 16);
+        
+        // Create a custom shader material
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                time: { value: 0 },
+                color1: { value: new THREE.Color(0x2196F3) }, // Primary color
+                color2: { value: new THREE.Color(0x21CBF3) }  // Secondary color
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform float time;
+                uniform vec3 color1;
+                uniform vec3 color2;
+                varying vec2 vUv;
+                
+                void main() {
+                    float pulse = sin(time * 2.0) * 0.5 + 0.5;
+                    vec3 color = mix(color1, color2, pulse * vUv.x);
+                    gl_FragColor = vec4(color, 0.8);
+                }
+            `,
+            transparent: true
+        });
+        
+        const torusKnot = new THREE.Mesh(geometry, material);
+        heroScene.add(torusKnot);
+        
+        heroCamera.position.z = 10;
+        
+        // Handle mouse movement
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
+        
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
+        
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX - windowHalfX);
+            mouseY = (event.clientY - windowHalfY);
+        });
+        
+        // Main camera positioning
+        camera.position.z = 6;
+        
+        // Animation loop
+        const clock = new THREE.Clock();
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const elapsedTime = clock.getElapsedTime();
+            
+            // Update particles
+            particlesMesh.rotation.x += 0.001;
+            particlesMesh.rotation.y += 0.001;
+            
+            // Mouse follow with easing
+            targetX = mouseX * 0.001;
+            targetY = mouseY * 0.001;
+            
+            particlesMesh.rotation.y += 0.05 * (targetX - particlesMesh.rotation.y);
+            particlesMesh.rotation.x += 0.05 * (targetY - particlesMesh.rotation.x);
+            
+            // Update hero section 3D element
+            if (torusKnot) {
+                torusKnot.rotation.x = elapsedTime * 0.3;
+                torusKnot.rotation.y = elapsedTime * 0.2;
+                
+                // Update shader uniform
+                material.uniforms.time.value = elapsedTime;
+            }
+            
+            // Render both scenes
+            renderer.render(scene, camera);
+            hero3DRenderer.render(heroScene, heroCamera);
+        }
+        
+        animate();
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            // Main scene
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            // Hero scene
+            if (heroElement) {
+                heroCamera.aspect = heroElement.clientWidth / heroElement.clientHeight;
+                heroCamera.updateProjectionMatrix();
+                hero3DRenderer.setSize(heroElement.clientWidth, heroElement.clientHeight);
+            }
+        });
+        
+        // Mobile menu toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navMenu = document.querySelector('nav ul');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navMenu.classList.toggle('show');
+            mobileMenuBtn.classList.toggle('active');
+            
+            // Change icon
+            const icon = mobileMenuBtn.querySelector('i');
+            if (icon.classList.contains('fa-bars')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+        
+        // Navbar active class on scroll
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('nav ul li a');
+        
+        function activeNavOnScroll() {
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                
+                if (pageYOffset >= sectionTop - sectionHeight / 3) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', activeNavOnScroll);
+        
+        // Header background on scroll
+        const header = document.querySelector('header');
+        
+        function headerBgOnScroll() {
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        }
+        
+        window.addEventListener('scroll', headerBgOnScroll);
+        
+        // Scroll to top button
+        const scrollTopBtn = document.getElementById('scrollTop');
+        
+        function scrollFunction() {
+            if (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) {
+                scrollTopBtn.classList.add('show');
+            } else {
+                scrollTopBtn.classList.remove('show');
+            }
+        }
+        
+        window.addEventListener('scroll', scrollFunction);
+        
+        scrollTopBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Smooth scrolling for all anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Close mobile menu if open
+                navMenu.classList.remove('show');
+                
+                // Change mobile menu icon if needed
+                const icon = mobileMenuBtn.querySelector('i');
+                if (icon.classList.contains('fa-times')) {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+                
+                const target = document.querySelector(this.getAttribute('href'));
+                
+                window.scrollTo({
+                    top: target.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Portfolio filtering
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const portfolioItems = document.querySelectorAll('.portfolio-item');
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons
+                filterBtns.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Add active class to clicked button
+                btn.classList.add('active');
+                
+                const filterValue = btn.getAttribute('data-filter');
+                
+                portfolioItems.forEach(item => {
+                    if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
+                        gsap.to(item, {
+                            scale: 1,
+                            opacity: 1,
+                            duration: 0.4
+                        });
+                        item.style.display = 'block';
+                    } else {
+                        gsap.to(item, {
+                            scale: 0.8,
+                            opacity: 0,
+                            duration: 0.4,
+                            onComplete: () => {
+                                item.style.display = 'none';
+                            }
+                        });
+                    }
+                });
+            });
+        });
+        
+        // Contact form submission
+        const contactForm = document.getElementById('contactForm');
+        
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Here you would typically handle form submission with AJAX
+            alert('تم إرسال رسالتك بنجاح!');
+            contactForm.reset();
+        });
+        
+        // Newsletter form
+        const newsletterForm = document.querySelector('.footer-newsletter-form');
+        
+        newsletterForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Here you would typically handle form submission with AJAX
+            alert('شكراً للاشتراك في النشرة الإخبارية!');
+            newsletterForm.reset();
+        });
+        
+        // Typing effect
+        const typingElement = document.querySelector('.typing-effect');
+        const texts = ['ياسر عمار', 'مطور ويب', 'مصمم UI/UX', 'مطور Three.js'];
+        let textIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typingDelay = 150;
+        let erasingDelay = 100;
+        let newTextDelay = 2000;
+        
+        function typeEffect() {
+            const currentText = texts[textIndex];
+            
+            if (isDeleting) {
+                typingElement.textContent = currentText.substring(0, charIndex - 1);
+                charIndex--;
+                typingDelay = erasingDelay;
+            } else {
+                typingElement.textContent = currentText.substring(0, charIndex + 1);
+                charIndex++;
+                typingDelay = 150;
+            }
+            
+            if (!isDeleting && charIndex === currentText.length) {
+                // Word is complete
+                isDeleting = true;
+                typingDelay = newTextDelay;
+            } else if (isDeleting && charIndex === 0) {
+                // Word is deleted
+                isDeleting = false;
+                textIndex = (textIndex + 1) % texts.length;
+            }
+            
+            setTimeout(typeEffect, typingDelay);
+        }
+        
+        // Start typing effect
+        setTimeout(typeEffect, 1000);
+        
+        // Animation on scroll with GSAP and ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Reveal animations
+        const fadeUpElements = document.querySelectorAll('.fade-up');
+        const fadeRightElements = document.querySelectorAll('.fade-right');
+        const fadeLeftElements = document.querySelectorAll('.fade-left');
+        
+        fadeUpElements.forEach(element => {
+            gsap.to(element, {
+                scrollTrigger: {
+                    trigger: element,
+                    start: "top 85%",
+                    toggleClass: {targets: element, className: "animate"}
+                }
+            });
+        });
+        
+        fadeRightElements.forEach(element => {
+            gsap.to(element, {
+                scrollTrigger: {
+                    trigger: element,
+                    start: "top 85%",
+                    toggleClass: {targets: element, className: "animate"}
+                }
+            });
+        });
+        
+        fadeLeftElements.forEach(element => {
+            gsap.to(element, {
+                scrollTrigger: {
+                    trigger: element,
+                    start: "top 85%",
+                    toggleClass: {targets: element, className: "animate"}
+                }
+            });
+        });
+        
+        // Theme toggle
+        const themeToggle = document.querySelector('.theme-toggle');
+        let isDarkTheme = true;
+        
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-theme');
+            
+            const icon = themeToggle.querySelector('i');
+            if (isDarkTheme) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+            
+            isDarkTheme = !isDarkTheme;
+        });
+    </script>
+</body>
+</html>
